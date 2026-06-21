@@ -504,6 +504,7 @@ function exportTxt(){
   const cf=detectConflicts(pa);
   const byDay={};pa.forEach(a=>{(byDay[a[0]]=byDay[a[0]]||[]).push(a);});
   let txt="⚡ ELECTRIC CASTLE 2026 – MY SCHEDULE\n";
+  txt+="Planner by Calea Connect · caleaconnect.eu\n";
   txt+="Generated on "+new Date().toLocaleDateString("en-GB")+"\n"+"=".repeat(50)+"\n\n";
   Object.entries(byDay).forEach(([day,acts])=>{
     txt+=`📅 ${DAY_LABELS[day].toUpperCase()}\n${"-".repeat(40)}\n`;
@@ -514,9 +515,10 @@ function exportTxt(){
     txt+="\n";
   });
   if(cf.size) txt+="⚠ OVERLAPS DETECTED – check acts marked with ⚠\n";
+  txt+="\nPlanner by Calea Connect · caleaconnect.eu\nSchedule data © Electric Castle / Untold Group\n";
   const blob=new Blob([txt],{type:"text/plain"});
   const url=URL.createObjectURL(blob);
-  const a=document.createElement("a");a.href=url;a.download="EC2026_my_schedule.txt";a.click();URL.revokeObjectURL(url);
+  const a=document.createElement("a");a.href=url;a.download="EC2026_CaleaConnect_schedule.txt";a.click();URL.revokeObjectURL(url);
 }
 
 // ── ICS EXPORT ───────────────────────────────────────────────────────────────
@@ -540,7 +542,7 @@ function exportICS(){
 
   function esc(s){return s.replace(/[\n,;]/g," ");}
 
-  let ics="BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//EC2026 Planner//EN\r\nCALSCALE:GREGORIAN\r\nX-WR-CALNAME:Electric Castle 2026\r\nX-WR-TIMEZONE:Europe/Bucharest\r\n";
+  let ics="BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Calea Connect//EC2026 Planner//EN\r\nCALSCALE:GREGORIAN\r\nX-WR-CALNAME:Electric Castle 2026 – Calea Connect Planner\r\nX-WR-TIMEZONE:Europe/Bucharest\r\n";
 
   pa.forEach(a=>{
     const [day,stage,artist,start,end,genre]=a;
@@ -548,13 +550,13 @@ function exportICS(){
 }@ec2026`;
     const dtStart=toICSTime(day,start);
     const dtEnd=toICSTime(day,end);
-    ics+=`BEGIN:VEVENT\r\nUID:${uid}\r\nDTSTART;TZID=Europe/Bucharest:${dtStart}\r\nDTEND;TZID=Europe/Bucharest:${dtEnd}\r\nSUMMARY:${esc(artist)}\r\nLOCATION:${esc(STAGE_FULL[stage]||stage)} – Bánffy Castle, Bonțida\r\nDESCRIPTION:Genre: ${esc(genre)}\r\nEND:VEVENT\r\n`;
+    ics+=`BEGIN:VEVENT\r\nUID:${uid}\r\nDTSTART;TZID=Europe/Bucharest:${dtStart}\r\nDTEND;TZID=Europe/Bucharest:${dtEnd}\r\nSUMMARY:${esc(artist)}\r\nLOCATION:${esc(STAGE_FULL[stage]||stage)} – Bánffy Castle, Bonțida\r\nDESCRIPTION:Genre: ${esc(genre)} · Planner by Calea Connect (caleaconnect.eu)\r\nEND:VEVENT\r\n`;
   });
 
   ics+="END:VCALENDAR";
   const blob=new Blob([ics],{type:"text/calendar;charset=utf-8"});
   const url=URL.createObjectURL(blob);
-  const a=document.createElement("a");a.href=url;a.download="EC2026_my_schedule.ics";a.click();URL.revokeObjectURL(url);
+  const a=document.createElement("a");a.href=url;a.download="EC2026_CaleaConnect_schedule.ics";a.click();URL.revokeObjectURL(url);
 }
 
 // ── PDF PRINT ────────────────────────────────────────────────────────────────
@@ -596,7 +598,7 @@ function exportPDF(){
 
   const w=window.open("","_blank","width=800,height=900");
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
-<title>EC2026 – My Schedule</title>
+<title>EC2026 – My Schedule · Calea Connect</title>
 <style>
   body{font-family:'Inter',Arial,sans-serif;font-size:12px;color:#111;padding:32px;max-width:800px;margin:0 auto;}
   h1{font-size:20px;font-weight:800;margin-bottom:4px;}
@@ -614,11 +616,13 @@ function exportPDF(){
   @media print{body{padding:16px;} @page{margin:16mm;}}
 </style></head><body>
 <h1>⚡ Electric Castle 2026 – My Schedule</h1>
+<p class="sub">Planner by Calea Connect · caleaconnect.eu</p>
 <p class="sub">16–19 July · Bánffy Castle, Bonțida · Generated ${new Date().toLocaleDateString("en-GB")}</p>
 <table>
   <thead><tr><th>Time</th><th>Artist</th><th>Stage</th><th>Genre</th><th></th></tr></thead>
   <tbody>${rows}</tbody>
 </table>
+<p style="margin-top:18px;color:#666;font-size:10px;line-height:1.6;">Planner by Calea Connect · caleaconnect.eu<br>Schedule data © Electric Castle / Untold Group</p>
 </body></html>`);
   w.document.close();
   setTimeout(()=>w.print(),400);
@@ -663,7 +667,7 @@ function shareViaWhatsApp(){
   pa.sort((a,b)=>DAYS.indexOf(a[0])-DAYS.indexOf(b[0])||timeToMin(a[3])-timeToMin(b[3]));
   const lines=pa.map(a=>`${a[3]} ${a[2]} (${STAGE_FULL[a[1]]||a[1]})`);
   const preview=lines.slice(0,5).join("\n")+(lines.length>5?`\n...and ${lines.length-5} more`:"");
-  const msg=`⚡ My Electric Castle 2026 picks:\n${preview}\n\nSee full schedule: ${url}`;
+  const msg=`⚡ My Electric Castle 2026 picks via Calea Connect:\n${preview}\n\nSee full schedule: ${url}\n\nPlanner by Calea Connect · caleaconnect.eu`;
   const waUrl="https://wa.me/?text="+encodeURIComponent(msg);
   window.open(waUrl,"_blank","noopener,noreferrer");
   closeShareMenu();
