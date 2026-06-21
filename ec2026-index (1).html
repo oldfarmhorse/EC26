@@ -1,0 +1,118 @@
+<!--
+  Electric Castle 2026 Festival Planner
+  © 2026 Calea Connect (caleaconnect.eu) — All rights reserved
+  Schedule data © Electric Castle / Untold Group
+  Tool design & code: Calea Connect
+-->
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Electric Castle 2026 – Planner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="logo">
+      <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-label="EC">
+        <rect width="32" height="32" rx="6" fill="#e8c840"/>
+        <polygon points="16,4 20,13 30,13 22,19 25,28 16,22 7,28 10,19 2,13 12,13" fill="#0a0a0f"/>
+      </svg>
+      <div class="logo-text">
+        <h1>Electric Castle 2026</h1>
+        <p>16–19 July · Bánffy Castle · Bonțida</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-view active" id="btnList" onclick="setView('list')">☰ List</button>
+      <button class="btn btn-view" id="btnTT" onclick="setView('timetable')">⏱ Timetable</button>
+      <div class="search-wrap">
+        <svg class="search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="searchInput" placeholder="Search artist…" oninput="filterAll()">
+      </div>
+      <button class="btn btn-primary" onclick="exportTxt()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export
+      </button>
+      <button class="btn btn-danger" onclick="clearPicks()">Clear all</button>
+      <!-- Share dropdown -->
+      <div class="share-dropdown" id="shareDropdown">
+        <button class="btn btn-ghost" onclick="sharePicks()" title="Share your picks">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Share ▾
+        </button>
+        <div class="share-menu" id="shareMenu">
+          <button onclick="shareViaWhatsApp()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+            Share via WhatsApp
+          </button>
+          <button onclick="shareViaCopyLink()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            Copy link
+          </button>
+          <hr class="divider">
+          <button onclick="shareViaNavigator()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            More options…
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="tabs" id="dayTabs"></div>
+</header>
+
+<div id="shareNotif" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1e1e28;border:1px solid #4ade80;border-radius:10px;padding:12px 20px;font-size:13px;color:#4ade80;font-weight:600;z-index:999;box-shadow:0 8px 32px rgba(0,0,0,.5);align-items:center;gap:10px;">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="shareNotifText">Link copied!</span>
+</div>
+
+<div class="toolbar" id="genreFilters">
+  <span class="filter-label">Genre:</span>
+</div>
+
+<div class="app-body">
+  <div class="schedule-panel" id="schedulePanel"></div>
+  <aside class="picks-panel" id="picksPanel">
+    <div class="picks-title">My Schedule <span class="picks-count" id="picksCount">0</span></div>
+    <div id="picksContent"></div>
+    <div class="export-section" style="display:flex;flex-direction:column;gap:7px;">
+      <!-- WhatsApp share prominent button -->
+      <button class="btn btn-whatsapp" style="width:100%;justify-content:center;" onclick="shareViaWhatsApp()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+        Share via WhatsApp
+      </button>
+      <button class="btn btn-ghost" style="width:100%;justify-content:center;" onclick="shareViaCopyLink()">🔗 Copy link</button>
+      <button class="btn btn-ghost" style="width:100%;justify-content:center;" onclick="exportICS()">📅 Add to Calendar (.ics)</button>
+      <button class="btn btn-ghost" style="width:100%;justify-content:center;" onclick="exportPDF()">🖨️ Print / PDF</button>
+      <button class="btn btn-ghost" style="width:100%;justify-content:center;" onclick="exportTxt()">📋 Download .txt</button>
+    </div>
+  </aside>
+</div>
+
+<script src="app.js"></script>
+
+<footer style="text-align:center;padding:20px 16px 28px;border-top:1px solid var(--border);margin-top:16px;font-size:11px;color:var(--muted);line-height:1.8;">
+  <div style="margin-bottom:4px;">
+    <a href="https://caleaconnect.eu" target="_blank" rel="noopener noreferrer"
+       style="color:var(--accent);font-weight:700;text-decoration:none;letter-spacing:.3px;">
+      CALEA CONNECT
+    </a>
+    <span style="margin:0 8px;opacity:.4;">·</span>
+    <span>© 2026 Calea Connect — All rights reserved</span>
+  </div>
+  <div style="opacity:.55;">
+    This is an independent fan-made planning tool and is not affiliated with, endorsed by, or sponsored by Electric Castle, Untold Group, or their partners. Electric Castle name, schedule data, trademarks, and related materials are the property of their respective owners and are referenced here for informational purposes only. Always verify times, lineup changes, and festival information via the official Electric Castle channels.
+    <span style="margin:0 8px;opacity:.5;">·</span>
+    <a href="https://caleaconnect.eu" target="_blank" rel="noopener noreferrer"
+       style="color:var(--muted);text-decoration:underline;">caleaconnect.eu</a>
+  </div>
+</footer>
+
+</body>
+</html>
